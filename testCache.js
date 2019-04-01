@@ -33,4 +33,4 @@ setTimeout(
     },
     500);
 
-
+console.log(cache.get('This should fail'));

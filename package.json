@@ -1,6 +1,6 @@
 {
   "name": "objectcache",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple time based Object Cache for node",
   "main": "ObjectCache.js",
   "dependencies": {

@@ -132,7 +132,7 @@ class ObjectCache
      */
     get(key)
     {
-        if(this.cache[key] !== null)
+        if(this.cache[key] !== undefined)
         {
             this.cache[key].refresh();
             return this.cache[key].entry;
