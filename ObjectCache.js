@@ -29,9 +29,14 @@ class ObjectCacheEntity
      * Get its age
      * @returns {number} the number of milliseconds since it was last accessed
      */
+    since(time)
+    {
+        return time - this.lastAccessed;
+    }
+
     get age()
     {
-        return Date.now() - this.lastAccessed;
+        return this.since(Date.now());
     }
 }
 
@@ -177,11 +182,12 @@ class ObjectCache
     checkCache()
     {
         clearTimeout(this.timeout);
-        let removedItems = 0;
+        let removedItems = 0,
+            now = Date.now();
 
         for (let i in this.cache)
         {
-            if (this.cache[i].age > this.maxTTL)
+            if (this.cache[i].since(now) > this.maxTTL)
             {
                 removedItems++;
                 delete this.cache[i];
