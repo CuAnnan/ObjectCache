@@ -1,5 +1,7 @@
 let assert = require('assert');
 
+
+
 class SampleClass
 {
     constructor(var1, var2)

@@ -2,6 +2,11 @@
 const   MAX_TTL_DEFAULT = 60000,
         md5 = require('md5');
 
+/*
+ *  static object cache instance
+ */
+let instance = null;
+
 /**
  * The class to contain stored data
  */
@@ -195,6 +200,15 @@ class ObjectCache
         }
         this.size -= removedItems;
         this.timeout = setTimeout(() => {this.checkCache();}, this.maxTTL);
+    }
+
+    static getInstance(maxTTL)
+    {
+        if(instance === null)
+        {
+            instance = new ObjectCache(maxTTL);
+        }
+        return instance;
     }
 
 }
