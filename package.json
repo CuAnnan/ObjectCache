@@ -1,0 +1,26 @@
+{
+  "name": "objectcache",
+  "version": "1.0.0",
+  "description": "A simple time based Object Cache for node",
+  "main": "ObjectCache.js",
+  "dependencies": {
+    "md5": "^2.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CuAnnan/ObjectCache.git"
+  },
+  "keywords": [
+    "cache"
+  ],
+  "author": "Wing",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CuAnnan/ObjectCache/issues"
+  },
+  "homepage": "https://github.com/CuAnnan/ObjectCache#readme"
+}
