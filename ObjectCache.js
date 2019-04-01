@@ -2,19 +2,33 @@
 const   MAX_TTL_DEFAULT = 60000,
         md5 = require('md5');
 
+/**
+ * The class to contain stored data
+ */
 class ObjectCacheEntity
 {
+    /**
+     * The thing to be stored
+     * @param entry
+     */
     constructor(entry)
     {
         this.entry = entry;
-        this.updateLastAccessed();
+        this.refresh();
     }
 
-    updateLastAccessed()
+    /**
+     * Update its last access time.
+     */
+    refresh()
     {
         this.lastAccessed = Date.now();
     }
 
+    /**
+     * Get its age
+     * @returns {number} the number of milliseconds since it was last accessed
+     */
     get age()
     {
         return Date.now() - this.lastAccessed;
@@ -28,9 +42,21 @@ class ObjectCache
 {
     constructor(maxTTL)
     {
+        /*
+         * the maximum life age of the items to be stored
+         */
         this.maxTTL = maxTTL && !isNaN(maxTTL)?parseInt(maxTTL):MAX_TTL_DEFAULT;
+        /*
+         * A flat hash table to store the cached items in
+         */
         this.cache = {};
+        /*
+         * A timed function to check the age of all items in the cache
+         */
         this.timeout = setTimeout(()=>{this.checkCache();}, this.maxTTL);
+        /*
+         * The number of items in the cache
+         */
         this.size = 0;
     }
 
@@ -38,7 +64,7 @@ class ObjectCache
      * Adds an item to the cache and sets the time it was last accessed at to now
      * @param key The key by which to store the object, or an object you want to store. A hash will be created of the object, by its properties.
      * @param object The object to store
-     * @return The key by which the item was stored in the cache
+     * @return {string} The key by which the item was stored in the cache
      */
     put(key, object)
     {
@@ -47,18 +73,42 @@ class ObjectCache
             throw new Error('Invalid number of arguments');
         }
 
+        if(typeof key !== "string")
+        {
+            throw new Error("Invalid key type");
+        }
+
+        /*
+         * We already have this item. So we should refresh it and return its key
+         */
         if(this.cache[key])
         {
-            this.cache[key].updateLastAccessed();
+            this.cache[key].refresh();
             return key;
         }
 
+        /*
+         * Add the item to the cache
+         */
         this.cache[key] = new ObjectCacheEntity(object);
+
+        /*
+         * Increase the size
+         */
         this.size++;
+
+        /*
+         * Return the key
+         */
 
         return key;
     }
 
+    /**
+     * A helper function to add an object without deciding a key. For lazy people. Like me.
+     * @param object The item to be cached
+     * @returns {string} The key by which the item was stored.
+     */
     add(object)
     {
         let key = md5(JSON.stringify(object));
@@ -68,13 +118,13 @@ class ObjectCache
     /**
      * Gets an item from the cache by its key and updates the time it was last accessed at
      * @param key
-     * @returns The object in the cache for the key. Or null if no entry found.
+     * @returns {object} The object in the cache for the key. Or null if no entry found.
      */
     get(key)
     {
         if(this.cache[key] !== null)
         {
-            this.cache[key].updateLastAccessed();
+            this.cache[key].refresh();
             return this.cache[key].entry;
         }
         return null;
@@ -95,23 +145,30 @@ class ObjectCache
         return object;
     }
 
+    /**
+     * Clear all items from the cache
+     */
     clear()
     {
         this.cache = {};
         this.size = 0;
-        return this;
     }
 
+    /**
+     * Empty out the cache and stop the timeout interval to allow clean shutting down.
+     */
     destroy()
     {
         this.clear();
         clearTimeout(this.timeout);
     }
 
+    /**
+     * A helper function for clear
+     */
     empty()
     {
         this.clear();
-        return this;
     }
 
     /**
