@@ -146,9 +146,10 @@ class ObjectCache
      */
     remove(key)
     {
-        let object = this.cache[key].entry;
+        let object;
         if(this.cache[key])
         {
+            object = this.cache[key].entry;
             this.size --;
             delete this.cache[key];
         }
