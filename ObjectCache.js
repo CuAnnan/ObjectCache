@@ -1,11 +1,13 @@
 'use strict';
-const   MAX_TTL_DEFAULT = 60000,
-        md5 = require('md5');
+import crypto from 'crypto';
 
-/*
- *  static object cache instance
- */
-let instance = null;
+const MAX_TTL_DEFAULT = 600000;
+const TIMER_DURATION_DEFAULT = 1000;
+
+function md5(data)
+{
+    return crypto.createHash('md5').update(data).digest("hex");
+}
 
 /**
  * The class to contain stored data
@@ -50,12 +52,20 @@ class ObjectCacheEntity
  */
 class ObjectCache
 {
-    constructor(maxTTL)
+    static #instance = null;
+    static #defaultMaxTTL = 60000;
+
+    maxTTL;
+    cache;
+    size;
+
+    constructor(maxTTL, timerDuration)
     {
         /*
          * the maximum life age of the items to be stored
          */
-        this.maxTTL = maxTTL && !isNaN(maxTTL)?parseInt(maxTTL):MAX_TTL_DEFAULT;
+        this.maxTTL = maxTTL && !Number.isNaN(maxTTL)?parseInt(maxTTL):MAX_TTL_DEFAULT;
+        this.timerDuration = timerDuration && !Number.isNaN(timerDuration)?parseInt(timerDuration):TIMER_DURATION_DEFAULT;
         /*
          * A flat hash table to store the cached items in
          */
@@ -63,7 +73,7 @@ class ObjectCache
         /*
          * A timed function to check the age of all items in the cache
          */
-        this.timeout = setTimeout(()=>{this.checkCache();}, this.maxTTL);
+        this.timeout = setTimeout(()=>{this.checkCache();}, this.timerDuration);
         /*
          * The number of items in the cache
          */
@@ -140,6 +150,15 @@ class ObjectCache
         return null;
     }
 
+    link(keyToLink, keyToLinkAs)
+    {
+        if(this.cache[keyToLink] !== undefined)
+        {
+            this.cache[keyToLink].refresh();
+            this.cache[keyToLinkAs] = this.cache[keyToLink];
+        }
+    }
+
     /**
      * Remove an item from the cache by its key and return it
      * @param key
@@ -200,18 +219,23 @@ class ObjectCache
             }
         }
         this.size -= removedItems;
-        this.timeout = setTimeout(() => {this.checkCache();}, this.maxTTL);
+        this.timeout = setTimeout(() => {this.checkCache();}, this.timerDuration);
+    }
+
+    static initialise(maxTTL)
+    {
+        this.#instance = new ObjectCache(maxTTL);
     }
 
     static getInstance(maxTTL)
     {
-        if(instance === null)
+        if(this.#instance === null)
         {
-            instance = new ObjectCache(maxTTL);
+            this.#instance = new ObjectCache(maxTTL);
         }
-        return instance;
+        return this.#instance;
     }
 
 }
 
-module.exports = ObjectCache;
+export default ObjectCache;
