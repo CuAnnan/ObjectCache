@@ -225,7 +225,7 @@ class ObjectCache
     {
         let debugJSON = {maxTTL:this.maxTTL, entries:{}};
         let now = Date.now();
-        for(let [key, entry] of Object.values(this.cache))
+        for(let [key, entry] of Object.entries(this.cache))
         {
             debugJSON.entries[key] = this.maxTTL - entry.since(now);
         }
