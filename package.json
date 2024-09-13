@@ -18,5 +18,6 @@
   "bugs": {
     "url": "https://github.com/CuAnnan/ObjectCache/issues"
   },
-  "homepage": "https://github.com/CuAnnan/ObjectCache#readme"
+  "homepage": "https://github.com/CuAnnan/ObjectCache#readme",
+  "type": "module"
 }

@@ -53,7 +53,6 @@ class ObjectCacheEntity
 class ObjectCache
 {
     static #instance = null;
-    static #defaultMaxTTL = 60000;
 
     maxTTL;
     cache;
@@ -220,6 +219,17 @@ class ObjectCache
         }
         this.size -= removedItems;
         this.timeout = setTimeout(() => {this.checkCache();}, this.timerDuration);
+    }
+
+    get debugJSON()
+    {
+        let debugJSON = {maxTTL:this.maxTTL, entries:{}};
+        let now = Date.now();
+        for(let [key, entry] of Object.values(this.cache))
+        {
+            debugJSON.entries[key] = this.maxTTL - entry.since(now);
+        }
+        return debugJSON;
     }
 
     static initialise(maxTTL)
