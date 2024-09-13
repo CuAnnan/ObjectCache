@@ -3,10 +3,6 @@
   "version": "1.0.3",
   "description": "A simple time based Object Cache for node",
   "main": "ObjectCache.js",
-  "dependencies": {
-    "md5": "^2.2.1"
-  },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
